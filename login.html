@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Attendance System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .role-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 15px;
+    }
+
+    .role-btn {
+      flex: 1;
+      padding: 12px;
+      background: #f5f5f5;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+
+    .role-btn:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    .role-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-color: #667eea;
+      color: white;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 5px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 14px;
+      display: none;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      display: block;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
+
+    .signup-link {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+      font-size: 13px;
+    }
+
+    .signup-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    .signup-options {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      color: #667eea;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .divider {
+      text-align: center;
+      margin: 20px 0;
+      color: #999;
+      position: relative;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #ddd;
+      z-index: 0;
+    }
+
+    .divider span {
+      background: white;
+      padding: 0 10px;
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Welcome Back</h1>
+      <p>Attendance System Login</p>
+    </div>
+
+    <!-- STEP 1: School Selection -->
+    <div id="schoolSelectionStep">
+      <form id="schoolForm">
+        <div class="form-group">
+          <label for="schoolCode">School Code or Name *</label>
+          <input type="t ext" id="schoolCode" name="schoolCode" required placeholder="Enter your school code" autocomplete="off">
+          <small style="color: #999; font-size: 12px; margin-top: 5px; display: block;">You can search by code or school name</small>
+        </div>
+
+        <div id="schoolSuggestions" style="display: none; border: 1px solid #ddd; border-radius: 5px; margin-top: 10px; max-height: 200px; overflow-y: auto; background: #f9f9f9;">
+        </div>
+
+        <div class="loading" id="schoolLoading">
+          <span class="spinner"></span> Searching schools...
+        </div>
+
+        <button type="submit" class="btn">Find School</button>
+
+        <div class="message" id="schoolMessage"></div>
+
+        <div class="signup-link">
+          New school? <a href="signup.html">Register here</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- STEP 2: Role Selection (appears after school is selected) -->
+    <div id="roleSelectionStep" style="display: none;">
+      <div style="margin-bottom: 20px; padding: 15px; background: #f0f4ff; border-radius: 5px; text-align: center;">
+        <strong id="selectedSchoolName" style="color: #667eea;"></strong>
+        <button type="button" style="margin-left: 10px; padding: 5px 10px; background: #667eea; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;" onclick="backToSchoolSelection()">Change</button>
+      </div>
+
+      <div class="role-selector">
+        <button type="button" class="role-btn active" onclick="selectRole('student')">👤 Student</button>
+        <button type="button" class="role-btn" onclick="selectRole('teacher')">👨‍🏫 Teacher</button>
+        <button type="button" class="role-btn" onclick="selectRole('admin')">🔐 Admin</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Login Forms -->
+    <!-- Student/Teacher Login Form -->
+    <form id="userLoginForm" style="display: none;">
+      <div class="form-group">
+        <label for="userEmail">Email *</label>
+        <input type="email" id="userEmail" name="email" required placeholder="Enter your email">
+      </div>
+
+      <div class="form-group">
+        <label for="userPassword">Password *</label>
+        <input type="password" id="userPassword" name="password" required placeholder="Enter your password">
+      </div>
+
+      <div class="loading" id="userLoading">
+        <span class="spinner"></span> Logging in...
+      </div>
+
+      <button type="submit" class="btn">Login</button>
+      <button type="button" class="btn" style="background: #6c757d; margin-top: 0;" onclick="backToRoleSelection()">Back</button>
+
+      <div class="message" id="userMessage"></div>
+
+      <div class="signup-link" id="studentSignupLink">
+        Don't have an account? <a href="student-signup.html">Sign up here</a>
+      </div>
+
+      <div class="signup-link" id="teacherSignupLink" style="display: none;">
+        Don't have an account? <a href="teacher-signup.html">Sign up here</a>
+      </div>
+    </form>
+
+    <!-- Admin Login Form -->
+    <form id="adminLoginForm" style="display: none;">
+      <div class="form-group">
+        <label for="adminEmail">Email *</label>
+        <input type="email" id="adminEmail" name="email" required placeholder="Enter your email">
+      </div>
+
+      <div class="form-group">
+        <label for="adminPassword">Password *</label>
+        <input type="password" id="adminPassword" name="password" required placeholder="Enter your password">
+      </div>
+
+      <div class="loading" id="adminLoading">
+        <span class="spinner"></span> Logging in...
+      </div>
+
+      <button type="submit" class="btn">Login</button>
+      <button type="button" class="btn" style="background: #6c757d; margin-top: 0;" onclick="backToRoleSelection()">Back</button>
+
+      <div class="message" id="adminMessage"></div>
+
+      <div class="signup-link">
+        Don't have an admin account? <a href="adminsign.html">Register here</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5000";
+    let selectedSchool = null;
+    // let selectedRole = "student";
+
+    // ========== STEP 1: SCHOOL SELECTION ==========
+    const schoolInput = document.getElementById("schoolCode");
+    const schoolSuggestions = document.getElementById("schoolSuggestions");
+    const schoolForm = document.getElementById("schoolForm");
+
+    // Search for schools as user types
+    schoolInput.addEventListener("input", async (e) => {
+      const query = e.target.value.trim();
+
+      if (query.length < 1) {
+        schoolSuggestions.style.display = "none";
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/searchSchools?query=${encodeURIComponent(query)}`);
+        const schools = await response.json();
+
+        if (schools.length > 0) {
+          schoolSuggestions.innerHTML = schools.map(school => `
+            <div style="padding: 12px; border-bottom: 1px solid #ddd; cursor: pointer; transition: background 0.2s;" 
+                 onmouseover="this.style.background='#e8ecff'" 
+                 onmouseout="this.style.background='white'"
+                 onclick="selectSchool('${school._id}', '${school.schoolName}', '${school.schoolCode}')">
+              <div style="font-weight: 600; color: #333;">${school.schoolName}</div>
+              <div style="font-size: 12px; color: #999;">Code: ${school.schoolCode}</div>
+              <div style="font-size: 12px; color: #999;">${school.schoolType} • ${school.state}</div>
+            </div>
+          `).join("");
+          schoolSuggestions.style.display = "block";
+        } else {
+          schoolSuggestions.innerHTML = '<div style="padding: 12px; color: #999; text-align: center;">No schools found</div>';
+          schoolSuggestions.style.display = "block";
+        }
+      } catch (error) {
+        console.error("Error searching schools:", error);
+      }
+    });
+
+    // Submit school form
+    schoolForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!selectedSchool) {
+        showMessage(document.getElementById("schoolMessage"), "Please select a school from the list", "error");
+        return;
+      }
+
+      // Move to role selection
+      showRoleSelection();
+    });
+
+    function selectSchool(schoolId, schoolName, schoolCode) {
+      selectedSchool = { id: schoolId, name: schoolName, code: schoolCode };
+      document.getElementById("schoolCode").value = schoolName;
+      schoolSuggestions.style.display = "none";
+      document.getElementById("schoolMessage").textContent = "";
+      document.getElementById("schoolMessage").className = "message";
+    }
+
+    // ========== STEP 2: ROLE SELECTION ==========
+    function showRoleSelection() {
+      document.getElementById("schoolSelectionStep").style.display = "none";
+      document.getElementById("roleSelectionStep").style.display = "block";
+      document.getElementById("selectedSchoolName").textContent = `School: ${selectedSchool.name}`;
+      document.getElementById("userLoginForm").style.display = "none";
+      document.getElementById("adminLoginForm").style.display = "none";
+    }
+
+    function backToSchoolSelection() {
+      selectedSchool = null;
+      selectedRole = "student";
+      document.getElementById("schoolCode").value = "";
+      document.getElementById("schoolSelectionStep").style.display = "block";
+      document.getElementById("roleSelectionStep").style.display = "none";
+      document.getElementById("userLoginForm").style.display = "none";
+      document.getElementById("adminLoginForm").style.display = "none";
+      schoolSuggestions.style.display = "none";
+    }
+
+    function selectRole(role) {
+      selectedRole = role;
+      const buttons = document.querySelectorAll('.role-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Hide both forms first
+      document.getElementById("userLoginForm").style.display = "none";
+      document.getElementById("adminLoginForm").style.display = "none";
+
+      if (role === "admin") {
+        document.getElementById("adminLoginForm").style.display = "block";
+        document.getElementById("adminEmail").focus();
+      } else {
+        // Student or Teacher
+        document.getElementById("userLoginForm").style.display = "block";
+        document.getElementById("studentSignupLink").style.display = role === "student" ? "block" : "none";
+        document.getElementById("teacherSignupLink").style.display = role === "teacher" ? "block" : "none";
+        document.getElementById("userEmail").focus();
+      }
+    }
+
+    function backToRoleSelection() {
+      document.getElementById("userLoginForm").style.display = "none";
+      document.getElementById("adminLoginForm").style.display = "none";
+      document.getElementById("roleSelectionStep").style.display = "block";
+      document.getElementById("userMessage").textContent = "";
+      document.getElementById("adminMessage").textContent = "";
+    }
+
+    // ========== STEP 3: LOGIN ==========
+    // Student/Teacher Login
+    document.getElementById("userLoginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("userEmail").value;
+      const password = document.getElementById("userPassword").value;
+      const loading = document.getElementById("userLoading");
+      const message = document.getElementById("userMessage");
+
+      loading.style.display = "block";
+
+      try {
+        const response = await fetch(`${API_URL}/userLogin`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            email, 
+            password, 
+            role: selectedRole,
+            schoolId: selectedSchool.id 
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Store authentication data
+          localStorage.setItem("userToken", data.token);
+          localStorage.setItem("userId", data.user.id);
+          localStorage.setItem("userRole", data.user.role);
+          localStorage.setItem("userEmail", data.user.email);
+          localStorage.setItem("schoolId", selectedSchool.id);
+          localStorage.setItem("schoolName", selectedSchool.name);
+
+          showMessage(message, "✓ Login successful!", "success");
+
+          // Redirect based on role
+          setTimeout(() => {
+            if (selectedRole === "teacher") {
+              window.location.href = "teacher-dashboard.html";
+            } else if (selectedRole === "student") {
+              window.location.href = "student-dashboard.html";
+            }
+          }, 1000);
+        } else {
+          showMessage(message, data.message || "Login failed", "error");
+        }
+      } catch (error) {
+        console.error(error);
+        showMessage(message, "Server error. Please try again.", "error");
+      } finally {
+        loading.style.display = "none";
+      }
+    });
+
+    // Admin Login
+    document.getElementById("adminLoginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("adminEmail").value;
+      const password = document.getElementById("adminPassword").value;
+      const loading = document.getElementById("adminLoading");
+      const message = document.getElementById("adminMessage");
+
+      loading.style.display = "block";
+
+      try {
+        const response = await fetch(`${API_URL}/adminLogin`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            email, 
+            password,
+            schoolId: selectedSchool.id 
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Store authentication data
+          localStorage.setItem("adminToken", data.token);
+          localStorage.setItem("adminEmail", email);
+          localStorage.setItem("adminId", data.admin.id);
+          localStorage.setItem("schoolId", selectedSchool.id);
+          localStorage.setItem("schoolName", selectedSchool.name);
+
+          showMessage(message, "✓ Login successful!", "success");
+
+          setTimeout(() => {
+            window.location.href = "admin-dashboard.html";
+          }, 1000);
+        } else {
+          showMessage(message, data.message || "Login failed", "error");
+        }
+      } catch (error) {
+        console.error(error);
+        showMessage(message, "Server error. Please try again.", "error");
+      } finally {
+        loading.style.display = "none";
+      }
+    });
+
+    function showMessage(element, msg, type) {
+      element.textContent = msg;
+      element.className = `message ${type}`;
+    }
+    
+  </script>
+</body>
+</html>
